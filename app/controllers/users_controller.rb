@@ -6,6 +6,14 @@ class UsersController < ApplicationController
   def mypage
     @user = current_user
     @children = @user.children
+
+    if params[:filter] == "timeline"
+      # 自分 + フォロー中ユーザーの投稿
+      @posts = @user.timeline_posts.includes(:user)
+    else
+      # 自分の投稿のみ
+      @posts = @user.posts.includes(:user)
+    end
   end
 
   def show
@@ -44,7 +52,8 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:name, :introduction)
+    params.require(:user).permit(:name, :email, :area_id, :other_attr_1, :other_attr_2,:profile_image)
   end
+
 end
 
