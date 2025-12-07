@@ -11,6 +11,19 @@
   </head>
 
   <body>
-    <%= yield %>
+    
+    <%= render "layouts/header" %>
+
+    <div class="container mt-4">
+      <% if notice.present? %>
+        <div class="alert alert-info"><%= notice %></div>
+      <% end %>
+      <% if alert.present? %>
+        <div class="alert alert-danger"><%= alert %></div>
+      <% end %>
+
+      <%= yield %>
+    </div>
+    
   </body>
 </html>

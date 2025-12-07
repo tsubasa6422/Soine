@@ -41,7 +41,7 @@ group :development do
   gem 'rack-mini-profiler', '~> 2.0'
   gem 'listen', '~> 3.3'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
+  #gem 'spring'
 end
 
 group :test do
@@ -54,3 +54,24 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+gem 'devise'
+gem 'devise-i18n'
+gem 'rails-i18n'
+
+gem 'kaminari'
+
+gem 'image_processing'
+gem 'active_storage_validations'
+
+gem 'jquery-rails'
+gem 'bootstrap', '~> 5.0.2'
+gem 'sassc-rails'
+gem 'font-awesome-sass'
+
+group :development do
+  gem 'pry-rails'
+  gem 'annotate'
+  gem 'better_errors'
+  gem 'binding_of_caller'
+end
