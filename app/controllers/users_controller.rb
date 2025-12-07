@@ -6,12 +6,11 @@ class UsersController < ApplicationController
   def mypage
     @user = current_user
     @children = @user.children
+    @post = Post.new
 
     if params[:filter] == "timeline"
-      # 自分 + フォロー中ユーザーの投稿
       @posts = @user.timeline_posts.includes(:user)
     else
-      # 自分の投稿のみ
       @posts = @user.posts.includes(:user)
     end
   end

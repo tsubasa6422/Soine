@@ -67,6 +67,31 @@
         </div>
       </div>
 
+      <div class="card shadow-sm mt-4">
+        <div class="card-body">
+          <h5 class="mb-3">今の気持ちを投稿する</h5>
+
+          <%= form_with model: @post, url: posts_path, local: true do |f| %>
+            <div class="mb-2">
+              <%= f.label :title, "タイトル", class: "form-label" %>
+              <%= f.text_field :title, class: "form-control", placeholder: "例）寝かしつけが大変だった日" %>
+            </div>
+
+            <div class="mb-2">
+              <%= f.label :body, "本文", class: "form-label" %>
+              <%= f.text_area :body,
+                    rows: 3,
+                    class: "form-control",
+                    placeholder: "今日の育児のこと、感じたことを書いてみましょう" %>
+            </div>
+
+            <div class="text-end">
+              <%= f.submit "投稿する", class: "btn btn-primary btn-sm" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
     </div> <!-- /左カラム -->
 
     <!-- 右カラム：投稿一覧（タイムライン） -->
