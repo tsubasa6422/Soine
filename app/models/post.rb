@@ -1,6 +1,6 @@
 class Post < ApplicationRecord
   belongs_to :user
-  belongs_to :area
+  belongs_to :area, optional: true
   has_many :comments, dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :child_posts, dependent: :destroy

@@ -1,5 +1,19 @@
 @import "bootstrap";
 
+/*.soine-header {
+  background-image: image-url("soine_header.png");
+  background-size: contain;
+  background-position: center;
+  height: 100px;  
+}*/
+
+nav.navbar {
+  background-color: transparent !important;
+  height: 100px; 
+  display: flex;
+  align-items: center;
+}
+
 
 
 .logout-link {

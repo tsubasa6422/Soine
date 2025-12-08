@@ -1,52 +1,50 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-  <div class="container">
-    <%= link_to "Soine", root_path, class: "navbar-brand fw-bold" %>
+<header class="soine-header">
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <%= link_to "Soine", root_path, class: "navbar-brand fw-bold" %>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+      <div class="ms-auto">
+        <ul class="navbar-nav d-flex flex-row">
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+          <% if user_signed_in? %>
 
-        <% if user_signed_in? %>
+            <li class="nav-item me-3">
+              <%= link_to "アバウト", about_path, class: "nav-link" %>
+            </li>
 
-          <li class="nav-item">
-            <%= link_to "アバウト", about_path, class: "nav-link" %>
-          </li>
+            <li class="nav-item me-3">
+              <%= link_to "トップ", root_path, class: "nav-link" %>
+            </li>
 
-          <li class="nav-item">
-            <%= link_to "トップ", root_path, class: "nav-link" %>
-          </li>
+            <li class="nav-item me-3">
+              <%= link_to "マイページ", user_path(current_user), class: "nav-link" %>
+            </li>
 
-          <li class="nav-item">
-            <%= link_to "マイページ", user_path(current_user), class: "nav-link" %>
-          </li>
-        
-          <li class="nav-item">
-            <%= button_to destroy_user_session_path,
-                  method: :delete,
-                  form: { data: { turbo: false }, class: "d-inline" },
-                  class: "nav-link logout-link" do %>
-              ログアウト
-            <% end %>
-          </li>
+            <li class="nav-item">
+              <%= button_to destroy_user_session_path,
+                    method: :delete,
+                    form: { data: { turbo: false }, class: "d-inline" },
+                    class: "nav-link logout-link p-0" do %>
+                ログアウト
+              <% end %>
+            </li>
 
+          <% else %>
 
+            <li class="nav-item me-3">
+              <%= link_to "アバウト", about_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item me-3">
+              <%= link_to "ログイン", new_user_session_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "新規登録", new_user_registration_path, class: "nav-link" %>
+            </li>
 
-        <% else %>
-          <li class="nav-item">
-            <%= link_to "アバウト", about_path, class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "ログイン", new_user_session_path, class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "新規登録", new_user_registration_path, class: "nav-link" %>
-          </li>
-        <% end %>
+          <% end %>
 
-      </ul>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
+</header>

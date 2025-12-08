@@ -56,3 +56,15 @@
     </div>
   </div>
 </div>
+
+
+<hr class="my-4">
+
+<div class="text-end">
+  <%= button_to "退会する",
+                user_path(@user),
+                method: :delete,
+                data: { confirm: "本当に退会しますか？\nアカウント情報は削除されます。" },
+                class: "btn btn-outline-danger" %>
+</div>
+

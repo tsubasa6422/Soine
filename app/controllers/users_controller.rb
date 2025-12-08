@@ -8,12 +8,13 @@ class UsersController < ApplicationController
     @children = @user.children
     @post = Post.new
 
-    if params[:filter] == "timeline"
-      @posts = @user.timeline_posts.includes(:user)
-    else
-      @posts = @user.posts.includes(:user)
+    @posts = 
+      if params[:filter] == "timeline"
+        Post.includes(:user)
+      else
+        @user.posts.includes(:user)
+      end
     end
-  end
 
   def show
   end

@@ -4,7 +4,7 @@ class PostsController < ApplicationController
   def create
     @post = current_user.posts.build(post_params)
     
-    @post.area = current_user.area
+    #@post.area = current_user.area
 
     if @post.save
       redirect_to mypage_path, notice: "投稿しました。"
@@ -18,7 +18,7 @@ class PostsController < ApplicationController
         @posts = current_user.posts.includes(:area).order(created_at: :desc)
       end
 
-      render "mypages/show"  
+      render "users/mypage"
     end
   end
 
