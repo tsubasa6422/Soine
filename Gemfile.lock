@@ -79,6 +79,7 @@ GEM
       erubi (>= 1.0.0)
       rack (>= 0.9.0)
       rouge (>= 1.0.0)
+    bigdecimal (3.3.1)
     bindex (0.8.1)
     binding_of_caller (1.0.1)
       debug_inspector (>= 1.2.0)
@@ -114,6 +115,10 @@ GEM
     devise-i18n (1.15.0)
       devise (>= 4.9.0)
       rails-i18n
+    dotenv (3.2.0)
+    dotenv-rails (3.2.0)
+      dotenv (= 3.2.0)
+      railties (>= 6.1)
     erubi (1.13.1)
     execjs (2.10.0)
     ffi (1.17.2)
@@ -169,6 +174,8 @@ GEM
     mini_portile2 (2.8.9)
     minitest (5.26.2)
     msgpack (1.8.0)
+    mysql2 (0.5.7)
+      bigdecimal
     net-imap (0.5.12)
       date
       net-protocol
@@ -194,8 +201,7 @@ GEM
     pry-rails (0.3.11)
       pry (>= 0.13.0)
     public_suffix (6.0.2)
-    puma (5.6.9)
-      nio4r (~> 2.0)
+    puma (3.12.6)
     racc (1.8.1)
     rack (2.2.21)
     rack-mini-profiler (2.3.4)
@@ -326,14 +332,19 @@ DEPENDENCIES
   capybara (>= 3.26)
   devise
   devise-i18n
+  dotenv-rails
   font-awesome-sass
   image_processing
   jbuilder (~> 2.7)
   jquery-rails
   kaminari
   listen (~> 3.3)
+  mysql2
+  net-imap
+  net-pop
+  net-smtp
   pry-rails
-  puma (~> 5.0)
+  puma (~> 3.11)
   rack-mini-profiler (~> 2.0)
   rails (~> 6.1.7, >= 6.1.7.10)
   rails-i18n
