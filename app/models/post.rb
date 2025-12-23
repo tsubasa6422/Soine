@@ -5,6 +5,7 @@ class Post < ApplicationRecord
   has_many :likes, dependent: :destroy
   has_many :child_posts, dependent: :destroy
   has_many :children, through: :child_posts
+   has_many_attached :images
 
   validates :title, presence: true
   validates :body, presence: true

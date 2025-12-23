@@ -89,6 +89,13 @@
                               placeholder: "今日の育児のこと、感じたことを書いてみましょう" %>
             </div>
 
+            <div class="mb-2">
+              <%= f.label :images, "画像", class: "form-label" %>
+              <%= f.file_field :images, multiple: true, accept: "image/*", class: "form-control" %>
+              <small class="text-muted">※ 複数選択できます</small>
+            </div>
+
+
             <div class="text-end">
               <%= f.submit "投稿する", class: "btn btn-primary btn-sm" %>
             </div>
@@ -153,7 +160,7 @@
                 user_path(post.user),
                 class: "text-decoration-none" %>
               </strong>
-              
+
               <% if post.user.area.present? %>
                 <small class="text-muted d-block">
                   <i class="fas fa-map-marker-alt"></i>
@@ -182,8 +189,17 @@
           </div>
         </div>
 
-        <%# ここから下をクリックで詳細へ %>
         <%= link_to post_path(post), class: "text-decoration-none text-dark d-block" do %>
+
+          <!-- 画像（あれば表示） -->
+          <% if post.images.attached? %>
+            <div class="mb-2 d-flex flex-wrap gap-2">
+              <% post.images.each do |image| %>
+                <%= image_tag image.variant(resize_to_limit: [240, 240]),
+                              class: "rounded" %>
+              <% end %>
+            </div>
+          <% end %>
 
           <!-- タイトル -->
           <% if post.title.present? %>
@@ -194,6 +210,7 @@
           <p class="mb-0"><%= simple_format(post.body) %></p>
 
         <% end %>
+
 
       </div>
     </div>

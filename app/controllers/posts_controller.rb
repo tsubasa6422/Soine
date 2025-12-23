@@ -47,10 +47,10 @@ class PostsController < ApplicationController
   end
 
   def authorize_post!
-    redirect_to post_path(@post), alert: "権限がありません。" unless @post.user == current_user
+    redirect_to mypage_path(filter: "timeline"), alert: "権限がありません。" unless @post.user == current_user
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, :area_id, child_ids: [])
+    params.require(:post).permit(:title, :body, images: [])
   end
 end
