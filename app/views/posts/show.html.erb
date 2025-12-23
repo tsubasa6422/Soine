@@ -1,6 +1,8 @@
+
 <div class="container mt-4">
   <div class="card shadow-sm">
     <div class="card-body">
+
       <div class="d-flex justify-content-between align-items-start">
         <div>
           <h4 class="mb-2"><%= @post.title %></h4>
@@ -10,12 +12,24 @@
         </div>
 
         <% if @post.user == current_user %>
-          <%= link_to "編集", edit_post_path(@post), class: "btn btn-outline-secondary btn-sm" %>
+          <div class="d-flex gap-2">
+            <%= link_to "編集",
+                        edit_post_path(@post),
+                        class: "btn btn-outline-secondary btn-sm" %>
+
+            <%= link_to "削除",
+                        post_path(@post),
+                        method: :delete,
+                        data: { confirm: "この投稿を削除しますか？" },
+                        class: "btn btn-outline-danger btn-sm" %>
+          </div>
         <% end %>
       </div>
 
       <hr>
+
       <p class="mb-0"><%= simple_format(@post.body) %></p>
+
     </div>
   </div>
 </div>

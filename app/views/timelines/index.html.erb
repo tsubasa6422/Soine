@@ -163,8 +163,17 @@
 
             <%# 自分の投稿だけ編集を表示（詳細→編集導線でもOKだし、ここから編集もできる） %>
             <% if post.user == current_user %>
-              <%= link_to "編集", edit_post_path(post), class: "btn btn-outline-secondary btn-sm" %>
+              <%= link_to "編集",
+                          edit_post_path(post),
+                          class: "btn btn-outline-secondary btn-sm" %>
+
+              <%= link_to "削除",
+                          post_path(post),
+                          method: :delete,
+                          data: { confirm: "この投稿を削除しますか？" },
+                          class: "btn btn-outline-danger btn-sm" %>
             <% end %>
+
           </div>
         </div>
 

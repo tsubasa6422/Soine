@@ -1,7 +1,7 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_post, only: [:show, :edit, :update]
-  before_action :authorize_post!, only: [:edit, :update]
+  before_action :set_post, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_post!, only: [:edit, :update, :destroy]
 
   def create
     @post = current_user.posts.build(post_params)
@@ -35,6 +35,11 @@ class PostsController < ApplicationController
     end
   end
 
+  def destroy
+    @post.destroy
+    redirect_to mypage_path, notice: "投稿を削除しました。"
+  end
+
   private
 
   def set_post
@@ -42,7 +47,7 @@ class PostsController < ApplicationController
   end
 
   def authorize_post!
-    redirect_to post_path(@post), alert: "編集権限がありません。" unless @post.user == current_user
+    redirect_to post_path(@post), alert: "権限がありません。" unless @post.user == current_user
   end
 
   def post_params

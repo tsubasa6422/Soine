@@ -120,23 +120,42 @@
                       class: "btn btn-sm #{params[:filter] == 'timeline' ? 'btn-primary' : 'btn-outline-primary'}" %>
         </div>
 
-      <% if @posts.present? %>
-        <% @posts.each do |post| %>
-          <div class="card shadow-sm mb-3">
-            <div class="card-body">
-              <div class="d-flex justify-content-between small text-muted mb-1">
-                <span><%= post.user.name %></span>
-                <span><%= post.created_at.strftime("%Y/%m/%d %H:%M") %></span>
-              </div>
-              <p class="mb-0"><%= simple_format(post.body) %></p>
-            </div>
-          </div>
-        <% end %>
-      <% else %>
-        <p class="text-muted">まだ表示できる投稿がありません。</p>
-      <% end %>
-          
-    </div> <!-- /右カラム -->
+     <% if @posts.present? %>
+  <% @posts.each do |post| %>
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
 
-  </div> <!-- /row -->
-</div>
+        <!-- 投稿者名・日時 -->
+        <div class="d-flex justify-content-between small text-muted mb-1">
+          <span><%= post.user.name %></span>
+
+          <div class="d-flex align-items-center gap-2">
+            <span><%= post.created_at.strftime("%Y/%m/%d %H:%M") %></span>
+
+            <%# 自分の投稿だけ編集リンク %>
+              <% if post.user == current_user %>
+                <%= link_to "編集",
+                            edit_post_path(post),
+                            class: "btn btn-outline-secondary btn-sm" %>
+
+                <%= link_to "削除",
+                            post_path(post),
+                            method: :delete,
+                            data: { confirm: "この投稿を削除しますか？" },
+                            class: "btn btn-outline-danger btn-sm" %>
+              <% end %>
+
+          </div>
+        </div>
+
+        <!-- 本文（クリックで詳細へ） -->
+        <%= link_to post_path(post), class: "text-decoration-none text-dark d-block" do %>
+          <p class="mb-0"><%= simple_format(post.body) %></p>
+        <% end %>
+
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <p class="text-muted">まだ表示できる投稿がありません。</p>
+<% end %>
