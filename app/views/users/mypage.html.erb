@@ -127,7 +127,8 @@
 
         <!-- 投稿者名・日時 -->
         <div class="d-flex justify-content-between small text-muted mb-1">
-          <span><%= post.user.name %></span>
+          <%= link_to post.user.name, user_path(post.user), class: "text-decoration-none" %>
+
 
           <div class="d-flex align-items-center gap-2">
             <span><%= post.created_at.strftime("%Y/%m/%d %H:%M") %></span>

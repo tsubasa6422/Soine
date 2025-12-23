@@ -4,10 +4,9 @@ class User < ApplicationRecord
 
   validates :name, presence: true
 
-  belongs_to :area, optional: true
+  belongs_to :area
 
   has_one_attached :profile_image
-
 
   has_many :children, dependent: :destroy
   has_many :posts, dependent: :destroy

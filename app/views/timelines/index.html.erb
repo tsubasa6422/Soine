@@ -148,7 +148,12 @@
             </div>
 
             <div>
-              <strong><%= post.user.name %></strong>
+              <strong>
+                <%= link_to (post.user.name.presence || "ユーザー"),
+                user_path(post.user),
+                class: "text-decoration-none" %>
+              </strong>
+              
               <% if post.user.area.present? %>
                 <small class="text-muted d-block">
                   <i class="fas fa-map-marker-alt"></i>
