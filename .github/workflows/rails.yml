@@ -1,39 +1,33 @@
-name: Rails CI/CD
+- name: Deploy
+  env:
+    SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    SSH_USER: ${{ secrets.SSH_USER }}
+    SSH_HOST: ${{ secrets.SSH_HOST }}
+    SSH_PORT: ${{ secrets.SSH_PORT }}
+  run: |
+    echo "$SSH_PRIVATE_KEY" > private_key
+    chmod 600 private_key
 
-on:
-  push:
-    branches: [ main ]
+    ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" -i private_key "$SSH_USER@$SSH_HOST" << 'EOSSH'
+      set -e
+      cd ~/Soine
+      git pull origin main
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      # ★ nvmのnode/yarnを確実に使う
+      export PATH="$HOME/.nvm/versions/node/v20.19.2/bin:$PATH"
+      hash -r
+      node -v
+      yarn -v
 
-      - name: Deploy
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-        run: |
-          echo "$SSH_PRIVATE_KEY" > private_key
-          chmod 600 private_key
+      ~/.rbenv/shims/bundle install
+      RAILS_ENV=production ~/.rbenv/shims/bundle exec rails assets:precompile
+      RAILS_ENV=production ~/.rbenv/shims/bundle exec rails db:migrate
 
-          ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" -i private_key "$SSH_USER@$SSH_HOST" << 'EOSSH'
-            set -e
-            cd ~/Soine
-            git pull origin main
-            ~/.rbenv/shims/bundle install
-            RAILS_ENV=production ~/.rbenv/shims/bundle exec rails assets:precompile
-            RAILS_ENV=production ~/.rbenv/shims/bundle exec rails db:migrate
+      if [ -e tmp/pids/puma.pid ]; then
+        sudo kill "$(cat tmp/pids/puma.pid)" || true
+        echo "killed puma process"
+      fi
 
-            # pumaをpidで止めてる運用の場合
-            if [ -e tmp/pids/puma.pid ]; then
-              sudo kill "$(cat tmp/pids/puma.pid)" || true
-              echo "killed puma process"
-            fi
-
-            # ここは本来 systemd で再起動推奨だけど、今の書き方に寄せる
-            nohup ~/.rbenv/shims/rails s -e production -b 0.0.0.0 -p 3000 >/dev/null 2>&1 &
-          EOSSH
+      sudo systemctl restart soine-puma || true
+      sudo systemctl restart nginx || true
+    EOSSH
