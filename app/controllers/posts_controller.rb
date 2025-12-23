@@ -1,15 +1,14 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_post, only: [:show, :edit, :update]
+  before_action :authorize_post!, only: [:edit, :update]
 
   def create
     @post = current_user.posts.build(post_params)
-    
-    #@post.area = current_user.area
 
     if @post.save
-      redirect_to mypage_path, notice: "投稿しました。"
+      redirect_to mypage_path(filter: params[:filter]), notice: "投稿しました。"
     else
-      
       @user = current_user
 
       if params[:filter] == "timeline"
@@ -22,9 +21,31 @@ class PostsController < ApplicationController
     end
   end
 
+  def show
+  end
+
+  def edit
+  end
+
+  def update
+    if @post.update(post_params)
+      redirect_to post_path(@post), notice: "投稿を更新しました。"
+    else
+      render :edit
+    end
+  end
+
   private
 
+  def set_post
+    @post = Post.find(params[:id])
+  end
+
+  def authorize_post!
+    redirect_to post_path(@post), alert: "編集権限がありません。" unless @post.user == current_user
+  end
+
   def post_params
-    params.require(:post).permit(:title, :body)
+    params.require(:post).permit(:title, :body, :area_id, child_ids: [])
   end
 end

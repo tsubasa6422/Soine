@@ -1,2 +1,21 @@
-<h1>Posts#show</h1>
-<p>Find me in app/views/posts/show.html.erb</p>
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h4 class="mb-2"><%= @post.title %></h4>
+          <div class="text-muted small">
+            <%= @post.created_at.strftime("%Y/%m/%d %H:%M") %>
+          </div>
+        </div>
+
+        <% if @post.user == current_user %>
+          <%= link_to "編集", edit_post_path(@post), class: "btn btn-outline-secondary btn-sm" %>
+        <% end %>
+      </div>
+
+      <hr>
+      <p class="mb-0"><%= simple_format(@post.body) %></p>
+    </div>
+  </div>
+</div>
