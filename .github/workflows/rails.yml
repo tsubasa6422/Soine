@@ -1,33 +1,45 @@
-- name: Deploy
-  env:
-    SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-    SSH_USER: ${{ secrets.SSH_USER }}
-    SSH_HOST: ${{ secrets.SSH_HOST }}
-    SSH_PORT: ${{ secrets.SSH_PORT }}
-  run: |
-    echo "$SSH_PRIVATE_KEY" > private_key
-    chmod 600 private_key
+name: Rails CI/CD
 
-    ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" -i private_key "$SSH_USER@$SSH_HOST" << 'EOSSH'
-      set -e
-      cd ~/Soine
-      git pull origin main
+on:
+  push:
+    branches: [ main ]
 
-      # ★ nvmのnode/yarnを確実に使う
-      export PATH="$HOME/.nvm/versions/node/v20.19.2/bin:$PATH"
-      hash -r
-      node -v
-      yarn -v
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      ~/.rbenv/shims/bundle install
-      RAILS_ENV=production ~/.rbenv/shims/bundle exec rails assets:precompile
-      RAILS_ENV=production ~/.rbenv/shims/bundle exec rails db:migrate
+      - name: Deploy
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key
+          chmod 600 private_key
 
-      if [ -e tmp/pids/puma.pid ]; then
-        sudo kill "$(cat tmp/pids/puma.pid)" || true
-        echo "killed puma process"
-      fi
+          ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" -i private_key "$SSH_USER@$SSH_HOST" << 'EOSSH'
+            set -e
+            cd ~/Soine
+            git pull origin main
 
-      sudo systemctl restart soine-puma || true
-      sudo systemctl restart nginx || true
-    EOSSH
+            # nvm配下のnode/yarnを確実に使う
+            export PATH="$HOME/.nvm/versions/node/v20.19.2/bin:$PATH"
+            hash -r
+            node -v
+            yarn -v
+
+            ~/.rbenv/shims/bundle install
+            RAILS_ENV=production ~/.rbenv/shims/bundle exec rails assets:precompile
+            RAILS_ENV=production ~/.rbenv/shims/bundle exec rails db:migrate
+
+            if [ -e tmp/pids/puma.pid ]; then
+              sudo kill "$(cat tmp/pids/puma.pid)" || true
+              echo "killed puma process"
+            fi
+
+            sudo systemctl restart soine-puma || true
+            sudo systemctl restart nginx || true
+          EOSSH
