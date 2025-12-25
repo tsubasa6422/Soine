@@ -7,6 +7,24 @@
   height: 100px;  
 }*/
 
+.soine-avatar-small{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #cbd5e1; /* 薄いグレー */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 1;
+  .soine-avatar-small{
+  flex: 0 0 32px;}
+
+}
+
+
 nav.navbar {
   background-color: transparent !important;
   height: 100px; 

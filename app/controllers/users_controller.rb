@@ -8,13 +8,22 @@ class UsersController < ApplicationController
     @children = @user.children
     @post = Post.new
 
-    @posts = 
+    @posts =
       if params[:filter] == "timeline"
-        Post.includes(:user)
+        Post.includes(
+          :likes,
+          :comments,
+          user: { profile_image_attachment: :blob }
+        ).order(created_at: :desc)
       else
-        @user.posts.includes(:user)
+        @user.posts.includes(
+          :likes,
+          :comments,
+          user: { profile_image_attachment: :blob }
+        ).order(created_at: :desc)
       end
-    end
+  end
+
 
   def show
     @user = User.find(params[:id])

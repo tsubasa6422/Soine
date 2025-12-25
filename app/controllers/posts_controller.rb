@@ -22,7 +22,23 @@ class PostsController < ApplicationController
   end
 
   def show
+    @post = Post.find(params[:id])
+    @comment  = Comment.new
+    @comments = @post.comments.includes(:user).order(created_at: :desc)
   end
+
+  def index
+    @q = params[:q].to_s.strip
+
+    @posts = Post.includes(:user, :area, :likes).order(created_at: :desc)
+
+    if @q.present?
+      # SQLインジェクション対策でプレースホルダ
+      @posts = @posts.where("title LIKE ? OR body LIKE ?", "%#{@q}%", "%#{@q}%")
+    end
+  end
+
+
 
   def edit
   end

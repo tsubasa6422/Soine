@@ -16,4 +16,9 @@ Rails.application.routes.draw do
     resource  :like, only: [:create, :destroy]
     resources :child_posts, only: [:create, :destroy]
   end
+
+    get "/search", to: "search#posts"
+    get "/search/users", to: "search#users", as: :search_users
+
+
 end
