@@ -35,7 +35,32 @@
 
       <hr>
 
-      <p class="mb-0"><%= simple_format(@post.body) %></p>
+<p class="mb-0"><%= simple_format(@post.body) %></p>
+
+        <!-- 投稿時点の子ども情報（スナップショット） -->
+        <% if @post.child_posts.any? %>
+          <div class="mt-3">
+            <div class="small text-muted mb-1">この投稿の子ども</div>
+
+            <div class="d-flex flex-wrap gap-2">
+              <% @post.child_posts.each do |cp| %>
+                <span class="badge bg-light text-dark border">
+                  <%= cp.child_name.presence || "子ども" %>
+
+                  <% if cp.child_gender.present? %>
+                    ・<%= { 0 => "不明", 1 => "男の子", 2 => "女の子" }[cp.child_gender] || "不明" %>
+                  <% end %>
+
+                  <% if cp.child_age_months.present? %>
+                    ・<%= cp.child_age_months %>ヶ月
+                  <% end %>
+                </span>
+
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
 
       <!-- いいね -->
       <div class="mt-3 d-flex align-items-center gap-2">

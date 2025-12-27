@@ -5,22 +5,21 @@ class PostsController < ApplicationController
 
   def create
     @post = current_user.posts.build(post_params)
-    limit_child_ids_to_current_user(@post)
+
+    ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i)
+    child_ids = current_user.children.where(id: ids).pluck(:id)
 
     if @post.save
-      redirect_to mypage_path(filter: params[:filter]), notice: "投稿しました。"
-    else
-      @user = current_user
-
-      if params[:filter] == "timeline"
-        @posts = Post.includes(:user, :area, :children, :likes, :comments).order(created_at: :desc)
-      else
-        @posts = current_user.posts.includes(:area, :children, :likes, :comments).order(created_at: :desc)
+      child_ids.each do |cid|
+        @post.child_posts.create!(child_id: cid)  
       end
 
-      render "users/mypage"
+      redirect_to mypage_path(filter: params[:filter]), notice: "投稿しました。"
+    else
+      ...
     end
   end
+
 
   def show
     @comment = Comment.new
@@ -46,14 +45,20 @@ class PostsController < ApplicationController
 
   def update
     @post.assign_attributes(post_params)
-    limit_child_ids_to_current_user(@post)
+
+    ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i)
+    child_ids = current_user.children.where(id: ids).pluck(:id)
 
     if @post.save
+      @post.child_posts.destroy_all
+      child_ids.each { |cid| @post.child_posts.create!(child_id: cid) }
+
       redirect_to post_path(@post), notice: "投稿を更新しました。"
     else
       render :edit
     end
   end
+
 
   def destroy
     @post.destroy
