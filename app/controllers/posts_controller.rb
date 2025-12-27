@@ -5,6 +5,7 @@ class PostsController < ApplicationController
 
   def create
     @post = current_user.posts.build(post_params)
+    limit_child_ids_to_current_user(@post)
 
     if @post.save
       redirect_to mypage_path(filter: params[:filter]), notice: "投稿しました。"
@@ -12,9 +13,9 @@ class PostsController < ApplicationController
       @user = current_user
 
       if params[:filter] == "timeline"
-        @posts = Post.includes(:user, :area).order(created_at: :desc)
+        @posts = Post.includes(:user, :area, :children, :likes, :comments).order(created_at: :desc)
       else
-        @posts = current_user.posts.includes(:area).order(created_at: :desc)
+        @posts = current_user.posts.includes(:area, :children, :likes, :comments).order(created_at: :desc)
       end
 
       render "users/mypage"
@@ -22,29 +23,27 @@ class PostsController < ApplicationController
   end
 
   def show
-    @post = Post.find(params[:id])
     @comment  = Comment.new
     @comments = @post.comments.includes(:user).order(created_at: :desc)
   end
 
   def index
     @q = params[:q].to_s.strip
-
-    @posts = Post.includes(:user, :area, :likes).order(created_at: :desc)
+    @posts = Post.includes(:user, :area, :children, :likes).order(created_at: :desc)
 
     if @q.present?
-      # SQLインジェクション対策でプレースホルダ
       @posts = @posts.where("title LIKE ? OR body LIKE ?", "%#{@q}%", "%#{@q}%")
     end
   end
-
-
 
   def edit
   end
 
   def update
-    if @post.update(post_params)
+    @post.assign_attributes(post_params)
+    limit_child_ids_to_current_user(@post)
+
+    if @post.save
       redirect_to post_path(@post), notice: "投稿を更新しました。"
     else
       render :edit
@@ -67,6 +66,11 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, images: [])
+    params.require(:post).permit(:title, :body, :area_id, images: [], child_ids: [])
+  end
+
+  def limit_child_ids_to_current_user(post)
+    ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i)
+    post.child_ids = current_user.children.where(id: ids).pluck(:id)
   end
 end

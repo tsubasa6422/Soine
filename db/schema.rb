@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_12_23_095738) do
+ActiveRecord::Schema.define(version: 2025_12_27_051810) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -59,10 +59,14 @@ ActiveRecord::Schema.define(version: 2025_12_23_095738) do
 
   create_table "children", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.integer "age", null: false
+    t.integer "age"
     t.integer "gender", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "name"
+    t.boolean "unborn", default: false, null: false
+    t.date "due_on"
+    t.integer "age_months"
     t.index ["age"], name: "index_children_on_age"
     t.index ["gender"], name: "index_children_on_gender"
     t.index ["user_id"], name: "index_children_on_user_id"

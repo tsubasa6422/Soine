@@ -44,7 +44,15 @@
       <!-- 子ども一覧カード -->
       <div class="card shadow-sm">
         <div class="card-body">
-          <h5 class="mb-3">子ども一覧</h5>
+
+          <h5 class="d-flex align-items-center justify-content-between mb-3">
+            <span>My kids</span>
+
+            <%= link_to children_path, class: "text-muted" do %>
+              <i class="fa-solid fa-gear"></i>
+            <% end %>
+          </h5>
+
 
           <% if @user.children.any? %>
             <% @user.children.each do |child| %>
@@ -100,6 +108,34 @@
               <%= f.file_field :images, multiple: true, accept: "image/*", class: "form-control" %>
               <small class="text-muted">※ 複数選択できます</small>
             </div>
+
+            <div class="mb-2">
+              <div class="form-label">この投稿に関連するこども</div>
+
+              <% if current_user.children.any? %>
+                <div class="d-flex flex-wrap gap-2">
+                  <% current_user.children.each do |child| %>
+                    <div class="form-check">
+                      <%= check_box_tag "post[child_ids][]",
+                                        child.id,
+                                        @post.children.include?(child),
+                                        id: "post_child_ids_#{child.id}",
+                                        class: "form-check-input" %>
+
+                      <%= label_tag "post_child_ids_#{child.id}",
+                                    child.name,
+                                    class: "form-check-label" %>
+                    </div>
+                  <% end %>
+                </div>
+                <%= hidden_field_tag "post[child_ids][]", "" %>
+                <small class="text-muted">※複数選択できます</small>
+              <% else %>
+                <div class="text-muted">まだ「うちのこ」が登録されていません。</div>
+                <%= link_to "うちのこを登録する", new_child_path, class: "btn btn-sm btn-outline-primary mt-2" %>
+              <% end %>
+            </div>
+
 
 
             <div class="text-end">
@@ -172,6 +208,18 @@
               <% end %>
             </div>
           </div>
+
+          <% if post.children.any? %>
+            <div class="small text-muted mb-2">
+
+              <% if post.user == current_user %>
+                <%= post.children.map { |c| "#{c.name}（#{c.public_label}）" }.join(" / ") %>
+              <% else %>
+                <%= post.children.map(&:public_label).join(" / ") %>
+              <% end %>
+            </div>
+          <% end %>
+
 
           <!-- いいね数・コメント数 -->
           <div class="small d-flex gap-3 align-items-center"

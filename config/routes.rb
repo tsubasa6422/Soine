@@ -9,7 +9,8 @@ Rails.application.routes.draw do
 
   get 'timeline', to: 'timeline#index', as: :timeline
 
-  resources :children, only: [:new, :create, :edit, :update, :destroy]
+  resources :children, only: [:index, :new, :create, :edit, :update, :destroy]
+ 
 
   resources :posts do
     resources :comments, only: [:create, :destroy]

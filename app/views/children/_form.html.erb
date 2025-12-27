@@ -1,0 +1,89 @@
+<%= form_with model: child, local: true do |f| %>
+
+  <% if child.errors.any? %>
+    <div class="alert alert-danger py-2">
+      <ul class="mb-0">
+        <% child.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :name, "名前（ニックネーム）", class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", placeholder: "例）はるくん" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :gender, "性別", class: "form-label" %>
+    <%= f.select :gender,
+          [["その他", "unknown"], ["男の子", "boy"], ["女の子", "girl"]],
+          { include_blank: false },
+          class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :age, "年齢", class: "form-label" %>
+    <%= f.select :age,
+          [
+            ["出生前", "before_birth"],
+            ["0歳", "age_0"],
+            ["1歳", "age_1"],
+            ["2〜3歳", "age_2_3"],
+            ["4〜5歳", "age_4_5"],
+            ["6〜7歳", "age_6_7"],
+            ["8〜10歳", "age_8_10"],
+            ["11〜12歳", "age_11_12"],
+            ["13〜15歳", "age_13_15"]
+          ],
+          { include_blank: "選択してください" },
+          class: "form-select",
+          id: "child_age_select" %>
+
+    <small class="text-muted">※「0歳」のときだけ月齢を入力できます</small>
+  </div>
+
+  <!-- 0歳のときだけ表示する（月齢） -->
+  <div class="mb-3" id="age_months_wrap" style="display:none;">
+    <%= f.label :age_months, "月齢（ヶ月）", class: "form-label" %>
+    <%= f.number_field :age_months, class: "form-control", min: 0, max: 36, placeholder: "例）6" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :image, "アイコン画像（任意）", class: "form-label" %>
+    <%= f.file_field :image, accept: "image/*", class: "form-control" %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= f.submit class: "btn btn-primary" %>
+    <%= link_to "戻る", children_path, class: "btn btn-outline-secondary" %>
+  </div>
+
+<% end %>
+
+<script>
+  (function() {
+    function toggleAgeMonths() {
+      var select = document.getElementById("child_age_select");
+      var wrap = document.getElementById("age_months_wrap");
+      if (!select || !wrap) return;
+
+      var show = (select.value === "age_0");
+      wrap.style.display = show ? "block" : "none";
+
+      // 0歳以外なら月齢をクリア（バリデーション事故防止）
+      if (!show) {
+        var monthsInput = wrap.querySelector("input");
+        if (monthsInput) monthsInput.value = "";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", toggleAgeMonths);
+    document.addEventListener("change", function(e) {
+      if (e.target && e.target.id === "child_age_select") {
+        toggleAgeMonths();
+      }
+    });
+  })();
+</script>
