@@ -23,9 +23,14 @@ class PostsController < ApplicationController
   end
 
   def show
-    @comment  = Comment.new
-    @comments = @post.comments.includes(:user).order(created_at: :desc)
+    @comment = Comment.new
+
+    @comments = @post.comments
+                    .where(parent_id: nil)
+                    .includes(:user, replies: :user)
+                    .order(created_at: :desc)
   end
+
 
   def index
     @q = params[:q].to_s.strip
@@ -54,6 +59,8 @@ class PostsController < ApplicationController
     @post.destroy
     redirect_to mypage_path, notice: "投稿を削除しました。"
   end
+
+  
 
   private
 

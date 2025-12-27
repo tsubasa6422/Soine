@@ -78,6 +78,8 @@
           <%= f.text_area :comment, rows: 3, class: "form-control", placeholder: "コメントを書く" %>
         </div>
 
+          <%= f.hidden_field :parent_id, value: nil %>  <!-- 追加 -->
+
         <div class="d-flex justify-content-end">
           <%= f.submit "送信", class: "btn btn-primary" %>
         </div>
@@ -89,6 +91,7 @@
 
         <% @comments.each do |comment| %>
           <div class="border rounded p-2 mb-2">
+
             <div class="d-flex justify-content-between align-items-start">
               <div>
                 <strong><%= comment.user.name.presence || "ユーザー" %></strong>
@@ -105,8 +108,58 @@
             </div>
 
             <div class="mt-2"><%= simple_format(h(comment.comment)) %></div>
+
+            <!-- 返信する -->
+            <div class="mt-2">
+              <a href="#" class="reply-toggle small text-muted" data-comment-id="<%= comment.id %>">
+                返信する
+              </a>
+            </div>
+
+            <!-- 返信フォーム（最初は非表示） -->
+            <div class="reply-form d-none mt-2" id="reply-form-<%= comment.id %>">
+              <%= form_with model: [@post, Comment.new], local: true do |f| %>
+                <%= f.hidden_field :parent_id, value: comment.id %>
+
+                <div class="mb-2">
+                  <%= f.text_area :comment, rows: 2, class: "form-control", placeholder: "返信を書く" %>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                  <%= f.submit "返信", class: "btn btn-outline-secondary btn-sm" %>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- 返信一覧 -->
+            <% if comment.replies.any? %>
+              <div class="mt-3 ms-4">
+                <% comment.replies.each do |reply| %>
+                  <div class="border-start ps-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <strong><%= reply.user.name.presence || "ユーザー" %></strong>
+                        <div class="text-muted small"><%= reply.created_at.strftime("%Y/%m/%d %H:%M") %></div>
+                      </div>
+
+                      <% if reply.user == current_user %>
+                        <%= link_to "削除",
+                                    post_comment_path(@post, reply),
+                                    method: :delete,
+                                    data: { confirm: "コメントを削除しますか？" },
+                                    class: "btn btn-outline-danger btn-sm" %>
+                      <% end %>
+                    </div>
+
+                    <div class="mt-1"><%= simple_format(h(reply.comment)) %></div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+
           </div>
         <% end %>
+
       </div>
 
     </div>

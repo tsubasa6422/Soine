@@ -9,7 +9,12 @@ class CommentsController < ApplicationController
     if @comment.save
       redirect_to post_path(@post), notice: "コメントしました。"
     else
-      @comments = @post.comments.includes(:user).order(created_at: :desc)
+      # 親コメントだけ取得しつつ返信も読めるようにするのが理想
+      @comments = @post.comments
+                       .where(parent_id: nil)
+                       .includes(:user, replies: :user)
+                       .order(created_at: :desc)
+
       render "posts/show", status: :unprocessable_entity
     end
   end
@@ -32,7 +37,6 @@ class CommentsController < ApplicationController
   end
 
   def comment_params
-    params.require(:comment).permit(:comment)
+    params.require(:comment).permit(:comment, :parent_id)
   end
-
 end
