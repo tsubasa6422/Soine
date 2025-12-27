@@ -23,17 +23,8 @@ class PostsController < ApplicationController
 
     redirect_to mypage_path(filter: params[:filter]), notice: "投稿しました。"
   rescue ActiveRecord::RecordInvalid => e
-    flash.now[:alert] = e.record.errors.full_messages.join(", ")
-    render "users/mypage"
-  end
-
-
-    redirect_to mypage_path(filter: params[:filter]), notice: "投稿しました。"
-  rescue ActiveRecord::RecordInvalid => e
-    # child_post側で落ちたらここに来る（500にならない）
     Rails.logger.error(e.message)
     flash.now[:alert] = "投稿に失敗しました：#{e.record.errors.full_messages.join(', ')}"
-    # ここはあなたの画面構成に合わせて戻してOK
     render "users/mypage"
   end
 
