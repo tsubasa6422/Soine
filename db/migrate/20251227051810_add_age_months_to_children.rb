@@ -1,5 +1,7 @@
 class AddAgeMonthsToChildren < ActiveRecord::Migration[6.1]
   def change
-    add_column :children, :age_months, :integer
+    unless column_exists?(:children, :age_months)
+      add_column :children, :age_months, :integer
+    end
   end
 end
