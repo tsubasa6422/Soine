@@ -6,21 +6,27 @@ class PostsController < ApplicationController
   def create
     @post = current_user.posts.build(post_params)
 
-    ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i)
+    ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i).uniq
     children = current_user.children.where(id: ids)
 
     ActiveRecord::Base.transaction do
       @post.save!
 
       children.each do |child|
-        @post.child_posts.create!(
-          child_id: child.id,
-          child_name: child.name,
-          child_age_months: child.age_months,
-          child_gender: child.gender_before_type_cast # enumなら整数で保存
-        )
+        @post.child_posts.find_or_create_by!(child_id: child.id) do |cp|
+          cp.child_name = child.name
+          cp.child_age_months = child.age_months
+          cp.child_gender = child.gender_before_type_cast
+        end
       end
     end
+
+    redirect_to mypage_path(filter: params[:filter]), notice: "投稿しました。"
+  rescue ActiveRecord::RecordInvalid => e
+    flash.now[:alert] = e.record.errors.full_messages.join(", ")
+    render "users/mypage"
+  end
+
 
     redirect_to mypage_path(filter: params[:filter]), notice: "投稿しました。"
   rescue ActiveRecord::RecordInvalid => e
@@ -34,12 +40,11 @@ class PostsController < ApplicationController
   def update
     @post.assign_attributes(post_params)
 
-    ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i)
+    ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i).uniq
     children = current_user.children.where(id: ids)
 
     ActiveRecord::Base.transaction do
       @post.save!
-
       @post.child_posts.destroy_all
       children.each do |child|
         @post.child_posts.create!(
@@ -53,10 +58,10 @@ class PostsController < ApplicationController
 
     redirect_to post_path(@post), notice: "投稿を更新しました。"
   rescue ActiveRecord::RecordInvalid => e
-    Rails.logger.error(e.message)
-    flash.now[:alert] = "更新に失敗しました：#{e.record.errors.full_messages.join(', ')}"
+    flash.now[:alert] = e.record.errors.full_messages.join(", ")
     render :edit
   end
+
 
   def show
     @comment = Comment.new
@@ -88,6 +93,7 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, :area_id, images: [], child_ids: [])
+    params.require(:post).permit(:title, :body, :area_id, images: [])
   end
+
 end
