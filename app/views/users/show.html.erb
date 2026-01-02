@@ -67,11 +67,24 @@
               </div>
 
               <%= link_to post_path(post), class: "text-decoration-none text-dark d-block" do %>
+
+                <% if post.images.attached? %>
+                  <div class="mb-2 d-flex flex-wrap gap-2">
+                    <% post.images.each do |image| %>
+                      <div class="user-post-img-wrapper">
+                        <%= image_tag image, class: "user-post-img" %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+
                 <% if post.title.present? %>
                   <h6 class="mb-1"><%= post.title %></h6>
                 <% end %>
+
                 <p class="mb-0"><%= simple_format(post.body) %></p>
               <% end %>
+
 
             </div>
           </div>

@@ -9,8 +9,10 @@ Rails.application.routes.draw do
 
   get 'timeline', to: 'timeline#index', as: :timeline
 
-  resources :children, only: [:index, :new, :create, :edit, :update, :destroy]
- 
+  resources :children, only: [:index, :new, :create, :edit, :update, :destroy] do
+    get :posts, on: :member
+  end
+
 
   resources :posts do
     resources :comments, only: [:create, :destroy]
@@ -18,8 +20,6 @@ Rails.application.routes.draw do
     resources :child_posts, only: [:create, :destroy]
   end
 
-    get "/search", to: "search#posts"
-    get "/search/users", to: "search#users", as: :search_users
-
-
+  get "/search", to: "search#posts"
+  get "/search/users", to: "search#users", as: :search_users
 end

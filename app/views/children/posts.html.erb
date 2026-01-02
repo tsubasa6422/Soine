@@ -1,0 +1,55 @@
+<div class="container mt-4">
+
+  <!-- 1段目：タイトル＋戻る -->
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <h3 class="m-0"><%= @child.name %> のアルバム</h3>
+    <%= link_to "子ども一覧へ", children_path, class: "btn btn-outline-secondary btn-sm" %>
+  </div>
+
+  <!-- 2段目：月切り替え（中央） -->
+  <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+    <%= link_to "◀ 前月",
+          posts_child_path(@child, month: (@month - 1.month).strftime("%Y-%m")),
+          class: "btn btn-outline-secondary btn-sm" %>
+
+    <strong><%= @month.strftime("%Y年 %m月") %></strong>
+
+    <%= link_to "次月 ▶",
+          posts_child_path(@child, month: (@month + 1.month).strftime("%Y-%m")),
+          class: "btn btn-outline-secondary btn-sm" %>
+  </div>
+
+  <% if @posts.any? %>
+    <div class="row g-2">
+      <% @posts.each do |post| %>
+        <% next unless post.images.attached? %>
+
+        <div class="col-6 col-md-4 col-lg-3">
+          <%= link_to post_path(post), class: "text-decoration-none" do %>
+            <div class="album-tile">
+              <%= image_tag post.images.first.variant(resize_to_fill: [600, 600]),
+                    class: "album-img" %>
+
+              <div class="album-overlay">
+                <div class="album-title"><%= post.title %></div>
+                <div class="album-meta">
+                  <%= post.created_at.strftime("%Y/%m/%d") %>
+                  <% if post.images.count > 1 %>
+                    ・+<%= post.images.count - 1 %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @posts.none? { |p| p.images.attached? } %>
+      <div class="alert alert-info mt-3">画像付きの投稿がまだありません。</div>
+    <% end %>
+  <% else %>
+    <div class="alert alert-info">この子に紐づく投稿はまだありません。</div>
+  <% end %>
+
+</div>

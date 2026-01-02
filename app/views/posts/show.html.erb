@@ -7,19 +7,26 @@
           <h4 class="mb-2"><%= @post.title %></h4>
 
           <% if @post.images.attached? %>
-            <div class="mb-3 d-flex flex-wrap gap-2">
+            <div class="post-show-images">
               <% @post.images.each do |image| %>
-                <%= image_tag image.variant(resize_to_limit: [600, 600]),
-                              class: "rounded",
-                              style: "max-width: 100%;" %>
+                <a href="#"
+                  class="js-zoom-image"
+                  data-bs-toggle="modal"
+                  data-bs-target="#imageModal"
+                  data-image-url="<%= url_for(image) %>">
+                  <div class="post-show-img-wrapper">
+                    <%= image_tag image, class: "post-show-img" %>
+                  </div>
+                </a>
               <% end %>
             </div>
           <% end %>
 
-          <div class="text-muted small">
+          <div class="text-muted small mt-2">
             <%= @post.created_at.strftime("%Y/%m/%d %H:%M") %>
           </div>
         </div>
+
 
         <% if @post.user == current_user %>
           <div class="d-flex gap-2">
@@ -189,4 +196,25 @@
 
     </div>
   </div>
+
+  <!-- 画像拡大モーダル -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content bg-transparent border-0">
+        <div class="modal-body p-0 text-center">
+          <button type="button"
+                  class="btn btn-light position-absolute top-0 end-0 m-2"
+                  data-bs-dismiss="modal"
+                  aria-label="Close">✕</button>
+
+          <img id="modalImage"
+              src=""
+              alt="拡大画像"
+              class="img-fluid rounded"
+              style="max-height: 85vh; object-fit: contain;">
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

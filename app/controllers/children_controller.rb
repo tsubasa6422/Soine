@@ -1,6 +1,6 @@
 class ChildrenController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_child, only: [:edit, :update, :destroy]
+  before_action :set_child, only: [:edit, :update, :destroy, :posts]
 
   def index
     @children = current_user.children.order(created_at: :desc)
@@ -19,8 +19,7 @@ class ChildrenController < ApplicationController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @child.update(child_params)
@@ -35,16 +34,29 @@ class ChildrenController < ApplicationController
     redirect_to children_path, notice: "子ども情報を削除しました。"
   end
 
+  def posts
+    @month =
+      if params[:month].present?
+        Time.zone.parse("#{params[:month]}-01")
+      else
+        Time.current.beginning_of_month
+      end
+
+    range = @month.beginning_of_month..@month.end_of_month
+
+    @posts = @child.posts
+                  .where(created_at: range)
+                  .includes(:user, :area, :likes, :comments)
+                  .order(created_at: :desc)
+  end
+
   private
 
   def set_child
     @child = current_user.children.find(params[:id])
   end
 
-def child_params
-  params.require(:child).permit(:name, :age, :age_months, :gender, :image)
-end
-
-
-
+  def child_params
+    params.require(:child).permit(:name, :age, :age_months, :gender, :image)
+  end
 end

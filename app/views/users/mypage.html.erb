@@ -259,9 +259,12 @@
           <% if post.images.attached? %>
             <div class="mb-2 d-flex flex-wrap gap-2">
               <% post.images.each do |image| %>
-                <%= image_tag image.variant(resize_to_limit: [240, 240]), class: "rounded" %>
+                <div class="timeline-img-wrapper">
+                  <%= image_tag image, class: "timeline-img" %>
+                </div>
               <% end %>
             </div>
+
           <% end %>
 
           <% if post.title.present? %>
