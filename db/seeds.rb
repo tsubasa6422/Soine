@@ -1,10 +1,4 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+# ===== 都道府県マスタ =====
 areas = %w[
   北海道 青森県 岩手県 宮城県 秋田県 山形県 福島県
   茨城県 栃木県 群馬県 埼玉県 千葉県 東京都 神奈川県
@@ -18,4 +12,39 @@ areas = %w[
 
 areas.each do |name|
   Area.find_or_create_by!(name: name)
+end
+
+# ===== ポートフォリオ閲覧用デモユーザー =====
+user = User.find_or_create_by!(email: "portfolio@soine.com") do |u|
+  u.name = "Soine デモユーザー"
+  u.password = "password"
+end
+
+# エリア（必ず存在させる）
+area = Area.find_or_create_by!(name: "東京都")
+
+# ===== ポートフォリオ用投稿 =====
+posts = [
+  {
+    title: "夜泣きが続く時期の乗り切り方",
+    body: "生後3ヶ月頃から夜泣きが増えました。抱っこ・室温調整・お風呂の時間を見直したら少し落ち着きました。",
+    area: area
+  },
+  {
+    title: "離乳食を始めて困ったこと",
+    body: "初期は量よりも『慣れること』を意識しました。食べない日があっても焦らないのが大事でした。",
+    area: area
+  },
+  {
+    title: "パパの育児参加で意識したこと",
+    body: "完璧を目指さず、できることを継続することを大切にしています。",
+    area: area
+  }
+]
+
+posts.each do |post|
+  user.posts.find_or_create_by!(title: post[:title]) do |p|
+    p.body = post[:body]
+    p.area = post[:area]
+  end
 end

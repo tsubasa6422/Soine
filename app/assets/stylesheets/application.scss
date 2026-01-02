@@ -1,17 +1,11 @@
 @import "bootstrap";
 
-/*.soine-header {
-  background-image: image-url("soine_header.png");
-  background-size: contain;
-  background-position: center;
-  height: 100px;  
-}*/
-
-.soine-avatar-small{
+/* ===== 小アバター ===== */
+.soine-avatar-small {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #cbd5e1; /* 薄いグレー */
+  background: #cbd5e1;
   color: #fff;
   display: flex;
   align-items: center;
@@ -19,84 +13,89 @@
   font-weight: bold;
   font-size: 14px;
   line-height: 1;
-  .soine-avatar-small{
-  flex: 0 0 32px;}
-
+  flex: 0 0 32px;
 }
 
-
-nav.navbar {
-  background-color: transparent !important;
-  height: 100px; 
-  display: flex;
-  align-items: center;
-}
-
-
-
+/* ===== ログアウトリンク ===== */
 .logout-link {
   background: none !important;
   border: none !important;
   display: block;
   cursor: pointer;
-
-  
   padding: .5rem 1rem !important;
   line-height: 1.5 !important;
-
-  
   color: rgba(0, 0, 0, 0.55) !important;
   text-decoration: none !important;
 }
-
 .logout-link:hover {
   color: rgba(0, 0, 0, 0.7) !important;
   text-decoration: underline;
 }
 
+/* ヘッダー画像（背景だけ担当） */
+.soine-header {
+  height: 100px;
+  background-image: image-url("soine_header_1920x360.webp");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 
-/* ===== アルバム（画像サイズ統一） ===== */
+/* ナビバー（画像の下） */
+.navbar {
+  background-color: #fff;
+}
+
+
+/* ===== スマホ ===== */
+@media (max-width: 768px) {
+  .soine-header {
+    height: 120px;                  /* スマホは低めが綺麗 */
+    background-position: center top;
+  }
+
+  .navbar {
+    margin-top: -24px;
+  }
+}
+
+/* ===== アルバム ===== */
 .album-tile {
   position: relative;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
   background: #f7f7f7;
+  transition: transform .15s ease, box-shadow .15s ease;
 }
-
+.album-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, .12);
+}
 .album-img {
   width: 100%;
-  aspect-ratio: 1 / 1;}
-
+  aspect-ratio: 1 / 1;
+}
 .album-multi-badge {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
   font-size: 0.75rem;
   padding: 2px 6px;
   border-radius: 999px;
 }
-.album-tile {
-  transition: transform .15s ease, box-shadow .15s ease;
-}
 
-.album-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(0,0,0,.12);
-}
-
-
+/* ===== タイムライン画像 ===== */
 .timeline-img-wrapper {
-  width: 120px;       
+  width: 120px;
   height: 120px;
   overflow: hidden;
   border-radius: 10px;
   background: #f1f5f9;
   flex-shrink: 0;
 }
-
 .timeline-img {
   width: 100%;
   height: 100%;
@@ -104,22 +103,20 @@ nav.navbar {
   display: block;
 }
 
-/* ===== 投稿詳細 画像統一 ===== */
+/* ===== 投稿詳細画像 ===== */
 .post-show-images {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
-
 .post-show-img-wrapper {
-  width: 220px;      
-  height: 220px;     
+  width: 220px;
+  height: 220px;
   overflow: hidden;
   border-radius: 12px;
   background: #f1f5f9;
   flex-shrink: 0;
 }
-
 .post-show-img {
   width: 100%;
   height: 100%;
@@ -127,7 +124,7 @@ nav.navbar {
   display: block;
 }
 
-
+/* ===== ユーザー投稿画像 ===== */
 .user-post-img-wrapper {
   width: 120px;
   height: 120px;
@@ -136,11 +133,9 @@ nav.navbar {
   background: #f1f5f9;
   flex-shrink: 0;
 }
-
 .user-post-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-
