@@ -55,28 +55,32 @@
 
 
           <% if @user.children.any? %>
-            <% @user.children.each do |child| %>
-              <div class="d-flex align-items-center mb-3">
-                <div class="me-2 flex-shrink-0" style="width:40px; height:40px;">
-                  <% if child.image.attached? %>
-                    <%= image_tag child.image,
-                                  class: "rounded-circle",
-                                  style: "width:40px; height:40px; object-fit:cover; display:block;" %>
-                  <% else %>
-                    <div class="child-avatar me-2">
-                      <%= child.name.first.upcase %>
-                    </div>
-                  <% end %>
-                </div>
+          <% @user.children.each do |child| %>
+            <%= link_to posts_child_path(child),
+                        class: "d-flex align-items-center mb-3 text-decoration-none text-dark" do %>
 
-                <div>
-                  <div><strong><%= child.name %></strong></div>
-                  <small class="text-muted">
-                    <%= child.respond_to?(:age_label) ? child.age_label : "" %>
-                  </small>
-                </div>
+              <div class="me-2 flex-shrink-0" style="width:40px; height:40px;">
+                <% if child.image.attached? %>
+                  <%= image_tag child.image,
+                                class: "rounded-circle",
+                                style: "width:40px; height:40px; object-fit:cover; display:block;" %>
+                <% else %>
+                  <div class="child-avatar me-2">
+                    <%= child.name.first.upcase %>
+                  </div>
+                <% end %>
               </div>
+
+              <div>
+                <div><strong><%= child.name %></strong></div>
+                <small class="text-muted">
+                  <%= child.respond_to?(:age_label) ? child.age_label : "" %>
+                </small>
+              </div>
+
             <% end %>
+          <% end %>
+
           <% else %>
             <p class="text-muted mb-0">まだ子ども情報が登録されていません。</p>
           <% end %>
