@@ -1,6 +1,4 @@
-# ================================
-# 都道府県マスタ（バリデーション無視で確実に作成）
-# ================================
+
 areas = %w[
   北海道 青森県 岩手県 宮城県 秋田県 山形県 福島県
   茨城県 栃木県 群馬県 埼玉県 千葉県 東京都 神奈川県
@@ -17,29 +15,22 @@ areas.each do |name|
   area.save!(validate: false)
 end
 
-# ================================
-# 投稿・ユーザーで使うエリア（必ず存在）
-# ================================
+
 tokyo = Area.find_or_initialize_by(name: "東京都")
 tokyo.save!(validate: false)
 
-# ================================
-# ポートフォリオ用デモユーザー
-# ================================
+
 user = User.find_or_initialize_by(email: "portfolio@soine.com")
 user.name = "Soine デモユーザー"
 user.password = "password"
 user.password_confirmation = "password"
 
-# User に area が必須な設計への対応
 user.area = tokyo if user.respond_to?(:area=)
 user.area_id = tokyo.id if user.respond_to?(:area_id=)
 
 user.save!
 
-# ================================
-# ポートフォリオ用投稿
-# ================================
+
 posts = [
   {
     title: "夜泣きが続く時期の乗り切り方",
@@ -59,7 +50,6 @@ posts.each do |data|
   post = Post.find_or_initialize_by(user: user, title: data[:title])
   post.body = data[:body]
 
-  # Post に area が必須な設計への対応
   post.area = tokyo if post.respond_to?(:area=)
   post.area_id = tokyo.id if post.respond_to?(:area_id=)
 
@@ -67,3 +57,18 @@ posts.each do |data|
 end
 
 puts "✅ seed 完了（エリア・デモユーザー・投稿 作成済み）"
+
+# === 管理者アカウント（productionのみ / 存在しなければ作成） ===
+if Rails.env.production?
+  admin_email = ENV.fetch("ADMIN_EMAIL")
+  admin_password = ENV.fetch("ADMIN_PASSWORD")
+
+  Admin.find_or_create_by!(email: admin_email) do |admin|
+    admin.password = admin_password
+    admin.password_confirmation = admin_password
+  end
+
+  puts "✅ Admin seed completed (email: #{admin_email})"
+else
+  puts "ℹ️ Admin seed skipped (env=#{Rails.env})"
+end
