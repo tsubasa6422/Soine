@@ -52,14 +52,12 @@
             <div class="d-flex flex-wrap gap-2">
               <% @post.child_posts.each do |cp| %>
                 <span class="badge bg-light text-dark border">
-                  <%= cp.child_name.presence || "子ども" %>
-
                   <% if cp.child_gender.present? %>
-                    ・<%= { 0 => "不明", 1 => "男の子", 2 => "女の子" }[cp.child_gender] || "不明" %>
+                    <%= { 0 => "不明", 1 => "男の子", 2 => "女の子" }[cp.child_gender] || "不明" %>
                   <% end %>
 
                   <% if cp.child_age_months.present? %>
-                    ・<%= cp.child_age_months %>ヶ月
+                    <%= "・" if cp.child_gender.present? %><%= cp.child_age_months %>ヶ月
                   <% end %>
                 </span>
 
