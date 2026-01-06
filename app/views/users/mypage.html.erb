@@ -57,9 +57,18 @@
           <% if @user.children.any? %>
             <% @user.children.each do |child| %>
               <div class="d-flex align-items-center mb-3">
-                <div class="child-avatar me-2">
-                  <%= child.name.first.upcase %>
+                <div class="me-2 flex-shrink-0" style="width:40px; height:40px;">
+                  <% if child.image.attached? %>
+                    <%= image_tag child.image,
+                                  class: "rounded-circle",
+                                  style: "width:40px; height:40px; object-fit:cover; display:block;" %>
+                  <% else %>
+                    <div class="child-avatar me-2">
+                      <%= child.name.first.upcase %>
+                    </div>
+                  <% end %>
                 </div>
+
                 <div>
                   <div><strong><%= child.name %></strong></div>
                   <small class="text-muted">
