@@ -5,6 +5,7 @@ class PostsController < ApplicationController
 
   def create
     @post = current_user.posts.build(post_params)
+    @post.area_id = current_user.area_id  # ← 追加（投稿にユーザー地域を持たせる）
 
     ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i).uniq
     children = current_user.children.where(id: ids)
@@ -27,6 +28,7 @@ class PostsController < ApplicationController
     flash.now[:alert] = "投稿に失敗しました：#{e.record.errors.full_messages.join(', ')}"
     render "users/mypage"
   end
+
 
   def update
     @post.assign_attributes(post_params)
@@ -84,7 +86,8 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, :area_id, images: [])
+    params.require(:post).permit(:title, :body, images: [])
   end
+
 
 end
