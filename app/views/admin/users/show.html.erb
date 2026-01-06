@@ -1,0 +1,18 @@
+<h1>User: <%= @user.name %></h1>
+<p>Email: <%= @user.email %></p>
+
+<p>
+  <%= link_to "Delete user",
+    admin_user_path(@user),
+    method: :delete,
+    data: { confirm: "本当に削除しますか？（関連データも消える可能性あり）" } %>
+</p>
+
+<hr>
+
+<h2>Posts</h2>
+<ul>
+  <% @posts.each do |p| %>
+    <li><%= link_to p.title, admin_post_path(p) %></li>
+  <% end %>
+</ul>

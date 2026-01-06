@@ -13,6 +13,8 @@ class User < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :liked_posts, through: :likes, source: :post
+  has_many :child_posts, dependent: :destroy
+
 
   def get_profile_image(width, height)
     if profile_image.attached?

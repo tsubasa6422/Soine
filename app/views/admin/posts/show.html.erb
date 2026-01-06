@@ -1,0 +1,24 @@
+<h1><%= @post.title %></h1>
+<p>by <%= @post.user&.name %></p>
+<p>Area: <%= @post.area&.name %></p>
+
+<p><%= simple_format(@post.body) %></p>
+
+<p>
+  <%= link_to "Delete post",
+    admin_post_path(@post),
+    method: :delete,
+    data: { confirm: "本当に削除しますか？" } %>
+</p>
+
+<hr>
+
+<h2>Comments</h2>
+<ul>
+  <% @post.comments.each do |c| %>
+    <li>
+      <strong><%= c.user&.name %>:</strong>
+      <%= c.body %>
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Soine Admin</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", media: "all" %>
+    <%= javascript_pack_tag "application" %>
+  </head>
+
+  <body>
+    <nav style="padding: 10px; border-bottom: 1px solid #ddd;">
+      <%= link_to "Dashboard", admin_root_path %> |
+      <%= link_to "Users", admin_users_path %> |
+      <%= link_to "Posts", admin_posts_path %> |
+      <%= link_to "Logout", destroy_admin_session_path, method: :delete %>
+    </nav>
+
+    <% if notice %><p style="color: green;"><%= notice %></p><% end %>
+    <% if alert %><p style="color: red;"><%= alert %></p><% end %>
+
+    <div style="padding: 16px;">
+      <%= yield %>
+    </div>
+  </body>
+</html>

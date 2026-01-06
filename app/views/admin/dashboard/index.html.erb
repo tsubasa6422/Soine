@@ -1,0 +1,14 @@
+<h1>Admin Dashboard</h1>
+
+<ul>
+  <li>Users: <%= @users_count %></li>
+  <li>Posts: <%= @posts_count %></li>
+  <li>Comments: <%= @comments_count %></li>
+</ul>
+
+<hr>
+
+<ul>
+  <li><%= link_to "Users", admin_users_path %></li>
+  <li><%= link_to "Posts", admin_posts_path %></li>
+</ul>

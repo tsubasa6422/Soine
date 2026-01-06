@@ -1,6 +1,15 @@
 Rails.application.routes.draw do
   devise_for :users
 
+  devise_for :admins, path: "admin"
+
+  namespace :admin do
+    root to: "dashboard#index"
+    resources :users, only: [:index, :show, :destroy]
+    resources :posts, only: [:index, :show, :destroy]
+  end
+
+
   root to: 'homes#top'
   get '/about', to: 'homes#about'
 
