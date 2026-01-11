@@ -123,6 +123,28 @@
             </div>
 
             <div class="mb-2">
+              <%= f.label :area_id, "地域", class: "form-label" %>
+
+              <%= f.collection_select :area_id,
+                    Area.order(:id),
+                    :id,
+                    :name,
+                    { include_blank: "（自分の地域）または選択してください" },
+                    { class: "form-select" } %>
+
+              <% if current_user.area.present? %>
+                <small class="text-muted">
+                  未選択の場合は「<%= current_user.area.name %>」が自動で入ります（変更もできます）
+                </small>
+              <% else %>
+                <small class="text-muted">
+                  ※あなたの地域が未設定です。必要なら投稿ごとに地域を選択できます。
+                </small>
+              <% end %>
+            </div>
+
+
+            <div class="mb-2">
               <div class="form-label">この投稿に関連するこども</div>
 
               <% if current_user.children.any? %>
@@ -211,6 +233,13 @@
             <div class="d-flex align-items-center gap-2">
               <span><%= post.created_at.strftime("%Y/%m/%d %H:%M") %></span>
 
+              <% if post.area.present? %>
+                <span class="text-muted">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <%= post.area.name %>
+                </span>
+              <% end %>
+
               <% if post.user == current_user %>
                 <%= link_to "編集", edit_post_path(post), class: "btn btn-outline-secondary btn-sm" %>
                 <%= link_to "削除",
@@ -220,6 +249,7 @@
                             class: "btn btn-outline-danger btn-sm" %>
               <% end %>
             </div>
+
           </div>
 
           <% if post.children.any? %>

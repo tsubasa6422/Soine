@@ -22,9 +22,16 @@
             </div>
           <% end %>
 
-          <div class="text-muted small mt-2">
-            <%= @post.created_at.strftime("%Y/%m/%d %H:%M") %>
+          <div class="text-muted small mt-2 d-flex gap-3 align-items-center flex-wrap">
+            <span><%= @post.created_at.strftime("%Y/%m/%d %H:%M") %></span>
+
+            <span>
+              <i class="fas fa-map-marker-alt"></i>
+              <%= @post.area&.name || "地域未設定" %>
+            </span>
           </div>
+
+
         </div>
 
 

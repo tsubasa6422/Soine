@@ -3,26 +3,30 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
+
   def mypage
     @user = current_user
     @children = @user.children
-    @post = Post.new
+
+    @post = current_user.posts.build
+    @post.area_id ||= current_user.area_id
+
+    base = Post.includes(
+      :area,
+      :children,
+      :likes,
+      :comments,
+      user: { profile_image_attachment: :blob }
+    ).order(created_at: :desc)
 
     @posts =
       if params[:filter] == "timeline"
-        Post.includes(
-          :likes,
-          :comments,
-          user: { profile_image_attachment: :blob }
-        ).order(created_at: :desc)
+        base
       else
-        @user.posts.includes(
-          :likes,
-          :comments,
-          user: { profile_image_attachment: :blob }
-        ).order(created_at: :desc)
+        base.where(user_id: @user.id)
       end
   end
+
 
 
   def show

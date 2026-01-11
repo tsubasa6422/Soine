@@ -3,7 +3,18 @@
     <div class="card-body">
       <h4 class="mb-3">投稿編集</h4>
 
-      <%= form_with model: @post, local: true do |f| %>
+      <% if @post.errors.any? %>
+        <div class="alert alert-danger py-2">
+          <ul class="mb-0">
+            <% @post.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+
+      <%= form_with model: @post, local: true, multipart: true do |f| %>
         <div class="mb-2">
           <%= f.label :title, "タイトル", class: "form-label" %>
           <%= f.text_field :title, class: "form-control" %>
@@ -13,6 +24,67 @@
           <%= f.label :body, "本文", class: "form-label" %>
           <%= f.text_area :body, rows: 5, class: "form-control" %>
         </div>
+
+        <div class="mb-3">
+          <div class="form-label">現在の画像</div>
+
+          <% if @post.images.attached? %>
+            <div class="d-flex flex-wrap gap-2">
+              <% @post.images.attachments.each do |att| %>
+                <% blob = att.blob %>
+
+                <div class="border rounded p-2 text-center" style="width: 140px;">
+                  <div class="mb-2">
+                    <%= image_tag blob.variant(resize_to_fill: [120, 120]),
+                                  class: "rounded",
+                                  style: "object-fit:cover;" %>
+                  </div>
+
+                  <div class="form-check d-flex justify-content-center">
+                    <%= check_box_tag "post[remove_image_ids][]",
+                                      att.id,   # ✅ attachment.id を送る
+                                      false,
+                                      id: "remove_image_#{att.id}",
+                                      class: "form-check-input me-1" %>
+                    <%= label_tag "remove_image_#{att.id}", "削除", class: "form-check-label small" %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <%= hidden_field_tag "post[remove_image_ids][]", "" %>
+            <small class="text-muted d-block mt-1">※チェックした画像は「更新する」で削除されます</small>
+          <% else %>
+            <div class="text-muted">画像はありません</div>
+          <% end %>
+        </div>
+
+       
+      <div class="mb-3">
+        <%= f.label :images, "画像を追加", class: "form-label" %>
+        <%= f.file_field :images, multiple: true, accept: "image/*", class: "form-control" %>
+        <small class="text-muted">※複数選択できます（既存画像は残ったまま追加されます）</small>
+      </div>
+
+
+        <div class="mb-2">
+          <%= f.label :area_id, "地域", class: "form-label" %>
+
+          <%= f.collection_select :area_id,
+                Area.order(:id),
+                :id,
+                :name,
+                { include_blank: "未設定（空にする）" },
+                { class: "form-select" } %>
+
+          <% if current_user.area.present? %>
+            <small class="text-muted">
+              「未設定」を選ぶと地域なしにできます（必要なら変更してください）
+            </small>
+          <% end %>
+        </div>
+
+
 
         <div class="text-end">
           <%= f.submit "更新する", class: "btn btn-primary btn-sm" %>

@@ -5,7 +5,7 @@ class PostsController < ApplicationController
 
   def create
     @post = current_user.posts.build(post_params)
-    @post.area_id = current_user.area_id  # ← 追加（投稿にユーザー地域を持たせる）
+    @post.area_id = current_user.area_id if @post.area_id.blank?
 
     ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i).uniq
     children = current_user.children.where(id: ids)
@@ -26,18 +26,41 @@ class PostsController < ApplicationController
   rescue ActiveRecord::RecordInvalid => e
     Rails.logger.error(e.message)
     flash.now[:alert] = "投稿に失敗しました：#{e.record.errors.full_messages.join(', ')}"
+
+    @user = current_user
+    @children = @user.children
+
+    base = Post.includes(
+      :area, :children, :likes, :comments,
+      user: { profile_image_attachment: :blob }
+    ).order(created_at: :desc)
+
+    @posts = params[:filter] == "timeline" ? base : base.where(user_id: @user.id)
+
     render "users/mypage"
   end
 
-
   def update
-    @post.assign_attributes(post_params)
+    @post.assign_attributes(post_params.except(:images, :remove_image_ids))
 
     ids = Array(params.dig(:post, :child_ids)).reject(&:blank?).map(&:to_i).uniq
     children = current_user.children.where(id: ids)
 
+    remove_ids = Array(params.dig(:post, :remove_image_ids)).reject(&:blank?).map(&:to_i)
+
     ActiveRecord::Base.transaction do
       @post.save!
+
+      # 追加は追記
+      if params.dig(:post, :images).present?
+        @post.images.attach(params[:post][:images])
+      end
+
+      # 削除（attachment.id を送ってる前提）
+      if remove_ids.any?
+        @post.images.attachments.where(id: remove_ids).each(&:purge)
+      end
+
       @post.child_posts.destroy_all
       children.each do |child|
         @post.child_posts.create!(
@@ -59,9 +82,9 @@ class PostsController < ApplicationController
   def show
     @comment = Comment.new
     @comments = @post.comments
-                    .where(parent_id: nil)
-                    .includes(:user, replies: :user)
-                    .order(created_at: :desc)
+                     .where(parent_id: nil)
+                     .includes(:user, replies: :user)
+                     .order(created_at: :desc)
   end
 
   def index
@@ -71,6 +94,7 @@ class PostsController < ApplicationController
   end
 
   def destroy
+    @post.images.each(&:purge) if @post.images.attached?
     @post.destroy
     redirect_to mypage_path, notice: "投稿を削除しました。"
   end
@@ -86,8 +110,10 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, images: [])
+    params.require(:post).permit(
+      :title, :body, :area_id,
+      images: [],
+      remove_image_ids: [] 
+    )
   end
-
-
 end
