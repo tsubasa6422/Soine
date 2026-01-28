@@ -1,0 +1,142 @@
+<div class="container mt-4">
+  <div class="row">
+
+    <!-- 左カラム：戻る＆タイトル -->
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h5 class="mb-2">いいねした投稿</h5>
+          <p class="text-muted mb-3">自分がスターした投稿一覧です。</p>
+
+          <div class="d-grid gap-2">
+            <%= link_to "マイページに戻る", mypage_path, class: "btn btn-outline-secondary btn-sm" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右カラム：投稿一覧 -->
+    <div class="col-md-8">
+
+      <% if @posts.present? %>
+        <% @posts.each do |post| %>
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+
+              <!-- 投稿者情報＋投稿日時 -->
+              <div class="d-flex justify-content-between align-items-center small text-muted mb-2">
+                <div class="d-flex align-items-center">
+
+                  <!-- 投稿者アイコン（クリックでユーザー詳細へ） -->
+                  <div class="me-2 flex-shrink-0" style="width:32px; height:32px;">
+                    <%= link_to user_path(post.user), class: "d-inline-block", style: "width:32px; height:32px;" do %>
+                      <% if post.user.profile_image.attached? %>
+                        <%= image_tag url_for(post.user.profile_image),
+                                      class: "rounded-circle",
+                                      style: "width:32px; height:32px; object-fit:cover; display:block;" %>
+                      <% else %>
+                        <div class="soine-avatar-small">
+                          <%= (post.user.name.presence || "U").first.upcase %>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  </div>
+
+                  <!-- 投稿者名（クリックでユーザー詳細へ） -->
+                  <strong>
+                    <%= link_to (post.user.name.presence || "ユーザー"),
+                                user_path(post.user),
+                                class: "text-decoration-none" %>
+                  </strong>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                  <span><%= post.created_at.strftime("%Y/%m/%d %H:%M") %></span>
+
+                  <% if post.area.present? %>
+                    <span class="text-muted">
+                      <i class="fas fa-map-marker-alt"></i>
+                      <%= post.area.name %>
+                    </span>
+                  <% end %>
+
+                  <% if post.user == current_user %>
+                    <%= link_to "編集", edit_post_path(post), class: "btn btn-outline-secondary btn-sm" %>
+                    <%= link_to "削除",
+                                post_path(post),
+                                method: :delete,
+                                data: { confirm: "この投稿を削除しますか？" },
+                                class: "btn btn-outline-danger btn-sm" %>
+                  <% end %>
+                </div>
+              </div>
+
+              <% if post.children.any? %>
+                <div class="small text-muted mb-2">
+                  <% if post.user == current_user %>
+                    <%= post.children.map { |c| "#{c.name}（#{c.public_label}）" }.join(" / ") %>
+                  <% else %>
+                    <%= post.children.map(&:public_label).join(" / ") %>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <!-- いいね数・コメント数 -->
+              <div class="small d-flex gap-3 align-items-center"
+                   style="position:absolute; bottom:12px; right:16px;">
+
+                <% if post.liked_by?(current_user) %>
+                  <%= button_to post_like_path(post),
+                                method: :delete,
+                                class: "btn p-0 text-warning border-0 bg-transparent",
+                                form: { data: { turbo: false } } do %>
+                    <i class="fa-solid fa-star"></i>
+                    <%= post.likes.size %>
+                  <% end %>
+                <% else %>
+                  <%= button_to post_like_path(post),
+                                method: :post,
+                                class: "btn p-0 text-muted border-0 bg-transparent",
+                                form: { data: { turbo: false } } do %>
+                    <i class="fa-regular fa-star"></i>
+                    <%= post.likes.size %>
+                  <% end %>
+                <% end %>
+
+                <span class="text-muted">
+                  <i class="fa-regular fa-comment"></i>
+                  <%= post.comments.size %>
+                </span>
+              </div>
+
+              <!-- ここから下だけクリックで詳細へ -->
+              <%= link_to post_path(post), class: "text-decoration-none text-dark d-block" do %>
+
+                <% if post.images.attached? %>
+                  <div class="mb-2 d-flex flex-wrap gap-2">
+                    <% post.images.each do |image| %>
+                      <div class="timeline-img-wrapper">
+                        <%= image_tag image, class: "timeline-img" %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <% if post.title.present? %>
+                  <h6 class="mb-1"><%= post.title %></h6>
+                <% end %>
+
+                <p class="mb-0"><%= simple_format(post.body) %></p>
+
+              <% end %>
+
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted">まだいいねした投稿はありません。</p>
+      <% end %>
+
+    </div>
+  </div>
+</div>

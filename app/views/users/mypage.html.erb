@@ -41,6 +41,9 @@
         </div>
       </div>
 
+      
+
+      
       <!-- 子ども一覧カード -->
       <div class="card shadow-sm">
         <div class="card-body">
@@ -195,7 +198,10 @@
 
           <%= link_to "タイムライン",
                       mypage_path(filter: 'timeline'),
-                      class: "btn btn-sm #{params[:filter] == 'timeline' ? 'btn-primary' : 'btn-outline-primary'}" %>
+                      class: "btn btn-sm me-2 #{params[:filter] == 'timeline' ? 'btn-primary' : 'btn-outline-primary'}" %>
+
+          <%= link_to "いいねした投稿", likes_user_path(current_user),
+                                        class: "btn btn-sm btn-outline-primary" %>
         </div>
 
 <% if @posts.present? %>

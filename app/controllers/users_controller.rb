@@ -1,7 +1,8 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :ensure_correct_user, only: [:edit, :update, :destroy]
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :likes]
+  before_action :ensure_correct_user, only: [:edit, :update, :destroy, :likes]
+
 
 
   def mypage
@@ -27,12 +28,19 @@ class UsersController < ApplicationController
       end
   end
 
+  def likes
+    @posts = @user.liked_posts
+                  .includes(:area, :children, :likes, :comments, user: { profile_image_attachment: :blob }, images_attachments: :blob)
+                  .order(created_at: :desc)
+  end
+
+
 
 
   def show
-    @user = User.find(params[:id])
     @posts = @user.posts.order(created_at: :desc)
   end
+
 
   
   def edit
