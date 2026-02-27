@@ -1,7 +1,11 @@
 class PostsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user_or_admin!, only: [:index, :show]
+  before_action :authenticate_user!,          only: [:create, :edit, :update]
+  before_action :authenticate_user_or_admin!, only: [:destroy]
+
   before_action :set_post, only: [:show, :edit, :update, :destroy]
-  before_action :authorize_post!, only: [:edit, :update, :destroy]
+  before_action :authorize_post!,   only: [:edit, :update]
+  before_action :authorize_destroy!, only: [:destroy]
 
   def create
     @post = current_user.posts.build(post_params)
@@ -90,23 +94,30 @@ class PostsController < ApplicationController
 
   def index
     @q = params[:q].to_s.strip
+
     @posts = Post.includes(:user, :area, :children, :likes)
-                .where(is_hidden: false)
-                .order(created_at: :desc)
+    @posts = @posts.where(is_hidden: false) unless admin_signed_in?
+    @posts = @posts.order(created_at: :desc)
+
     @posts = @posts.where("title LIKE ? OR body LIKE ?", "%#{@q}%", "%#{@q}%") if @q.present?
   end
 
   def destroy
     @post.images.each(&:purge) if @post.images.attached?
     @post.destroy
-    redirect_to mypage_path, notice: "投稿を削除しました。"
+
+    if admin_signed_in?
+      redirect_to posts_path, notice: "投稿を削除しました。"
+    else
+      redirect_to mypage_path, notice: "投稿を削除しました。"
+    end
   end
 
   private
 
   def set_post
     @post =
-      if current_user.respond_to?(:admin?) && current_user.admin?
+      if admin_signed_in?
         Post.find(params[:id])
       else
         Post.find_by(id: params[:id], is_hidden: false)
@@ -117,6 +128,16 @@ class PostsController < ApplicationController
 
   def authorize_post!
     redirect_to mypage_path(filter: "timeline"), alert: "権限がありません。" unless @post.user == current_user
+  end
+
+  def authorize_destroy!
+    return if admin_signed_in?
+    redirect_to mypage_path(filter: "timeline"), alert: "権限がありません。" unless @post.user == current_user
+  end
+
+  def authenticate_user_or_admin!
+    return if user_signed_in? || admin_signed_in?
+    redirect_to(request.referer.presence || new_user_session_path, alert: "ログインしてください")
   end
 
   def post_params

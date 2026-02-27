@@ -6,7 +6,7 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     resources :users, only: [:index, :show, :destroy]
     resources :posts, only: [:index, :show, :destroy]
-    resources :reports, only: [:index, :show, :destroy]
+    resources :reports, only: [:index, :show, :update, :destroy]
   end
 
   root to: "homes#top"
