@@ -94,7 +94,8 @@
 
         <span class="text-muted small">いいね <%= @post.likes.count %> 件</span>
       </div>
-
+      
+      <%= link_to "通報する", new_post_report_path(@post), class: "btn btn-outline-danger btn-sm " %>
 
       <!-- コメントフォーム -->
       <hr class="my-4">

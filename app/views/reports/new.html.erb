@@ -1,0 +1,26 @@
+<h3>投稿を通報</h3>
+
+<%= form_with model: [@post, @report], local: true do |f| %>
+  <% if @report.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% @report.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :reason, "通報理由" %>
+    <%= f.select :reason, Report.reasons.keys.map { |k| [k, k] }, {}, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :detail, "詳細（任意）" %>
+    <%= f.text_area :detail, rows: 4, class: "form-control", placeholder: "具体的にどの点が問題か、任意で記入してください" %>
+  </div>
+
+  <%= f.submit "送信", class: "btn btn-danger" %>
+  <%= link_to "戻る", post_path(@post), class: "btn btn-link" %>
+<% end %>

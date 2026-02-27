@@ -1,0 +1,9 @@
+<!-- app/views/facilities/map.html.erb -->
+<h2>施設マップ（開発用）</h2>
+
+<div
+  data-controller="facility-map"
+  data-facility-map-api-key-value="<%= ENV.fetch('GOOGLE_MAPS_API_KEY') %>"
+  data-facility-map-facilities-value="<%= @facilities.to_json(only: [:id, :name, :category, :latitude, :longitude, :address]) %>"
+  style="height: 520px; width: 100%; border-radius: 12px;"
+></div>

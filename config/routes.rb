@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     resources :users, only: [:index, :show, :destroy]
     resources :posts, only: [:index, :show, :destroy]
+    resources :reports, only: [:index, :show, :destroy]
   end
 
   root to: "homes#top"
@@ -27,7 +28,10 @@ Rails.application.routes.draw do
     resources :comments, only: [:create, :destroy]
     resource :like, only: [:create, :destroy]
     resources :child_posts, only: [:create, :destroy]
+    resources :reports, only: [:new, :create]
   end
+
+  
 
   get "/search", to: "search#posts"
   get "/search/users", to: "search#users", as: :search_users

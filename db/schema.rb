@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_01_06_042349) do
+ActiveRecord::Schema.define(version: 2026_02_27_121104) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -27,7 +27,7 @@ ActiveRecord::Schema.define(version: 2026_01_06_042349) do
     t.string "filename", null: false
     t.string "content_type"
     t.text "metadata"
-    t.string "service_name", null: false 
+    t.string "service_name", null: false
     t.bigint "byte_size", null: false
     t.string "checksum", null: false
     t.datetime "created_at", null: false
@@ -100,6 +100,16 @@ ActiveRecord::Schema.define(version: 2026_01_06_042349) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "facilities", force: :cascade do |t|
+    t.string "name"
+    t.integer "category"
+    t.string "address"
+    t.float "latitude"
+    t.float "longitude"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "likes", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "post_id", null: false
@@ -117,8 +127,23 @@ ActiveRecord::Schema.define(version: 2026_01_06_042349) do
     t.text "body", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "is_hidden", default: false, null: false
     t.index ["area_id"], name: "index_posts_on_area_id"
+    t.index ["is_hidden"], name: "index_posts_on_is_hidden"
     t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
+  create_table "reports", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "reporter_id", null: false
+    t.integer "reason", default: 0, null: false
+    t.text "detail"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id", "reporter_id"], name: "index_reports_on_post_id_and_reporter_id", unique: true
+    t.index ["post_id"], name: "index_reports_on_post_id"
+    t.index ["status"], name: "index_reports_on_status"
   end
 
   create_table "users", force: :cascade do |t|
@@ -148,4 +173,6 @@ ActiveRecord::Schema.define(version: 2026_01_06_042349) do
   add_foreign_key "likes", "users"
   add_foreign_key "posts", "areas"
   add_foreign_key "posts", "users"
+  add_foreign_key "reports", "posts"
+  add_foreign_key "reports", "users", column: "reporter_id"
 end

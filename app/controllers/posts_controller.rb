@@ -28,12 +28,13 @@ class PostsController < ApplicationController
     flash.now[:alert] = "投稿に失敗しました：#{e.record.errors.full_messages.join(', ')}"
 
     @user = current_user
+
     @children = @user.children
 
-    base = Post.includes(
+      base = Post.includes(
       :area, :children, :likes, :comments,
       user: { profile_image_attachment: :blob }
-    ).order(created_at: :desc)
+    ).where(is_hidden: false).order(created_at: :desc)
 
     @posts = params[:filter] == "timeline" ? base : base.where(user_id: @user.id)
 
@@ -89,7 +90,9 @@ class PostsController < ApplicationController
 
   def index
     @q = params[:q].to_s.strip
-    @posts = Post.includes(:user, :area, :children, :likes).order(created_at: :desc)
+    @posts = Post.includes(:user, :area, :children, :likes)
+                .where(is_hidden: false)
+                .order(created_at: :desc)
     @posts = @posts.where("title LIKE ? OR body LIKE ?", "%#{@q}%", "%#{@q}%") if @q.present?
   end
 
@@ -102,7 +105,14 @@ class PostsController < ApplicationController
   private
 
   def set_post
-    @post = Post.find(params[:id])
+    @post =
+      if current_user.respond_to?(:admin?) && current_user.admin?
+        Post.find(params[:id])
+      else
+        Post.find_by(id: params[:id], is_hidden: false)
+      end
+
+    redirect_to root_path, alert: "投稿が見つかりません" unless @post
   end
 
   def authorize_post!

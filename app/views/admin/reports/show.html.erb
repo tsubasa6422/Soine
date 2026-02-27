@@ -1,0 +1,25 @@
+<h3>通報詳細</h3>
+
+<p>理由: <%= @report.reason %></p>
+<p>状態: <%= @report.status %></p>
+<p>詳細: <%= simple_format(@report.detail) %></p>
+
+<hr>
+
+<h4>対象投稿</h4>
+<p><%= link_to "投稿を見る", post_path(@report.post) %></p>
+
+<%= form_with model: [:admin, @report], local: true, method: :patch do |f| %>
+  <div class="mb-3">
+    <%= f.label :status, "ステータス" %>
+    <%= f.select :status, Report.statuses.keys, {}, class: "form-select" %>
+  </div>
+
+  <%# 任意：投稿を非表示にする %>
+  <div class="form-check mb-3">
+    <%= check_box_tag :hide_post, "1", false, class: "form-check-input" %>
+    <%= label_tag :hide_post, "この投稿を非表示にする", class: "form-check-label" %>
+  </div>
+
+  <%= f.submit "更新", class: "btn btn-primary" %>
+<% end %>
