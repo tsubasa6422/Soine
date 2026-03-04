@@ -13,7 +13,9 @@
 
   <div class="mb-3">
     <%= f.label :reason, "通報理由" %>
-    <%= f.select :reason, Report.reasons.keys.map { |k| [k, k] }, {}, class: "form-select" %>
+      <%= f.select :reason,
+          Report.reasons.keys.map { |k| [t("activerecord.attributes.report.reason.#{k}"), k] },
+          {}, class: "form-select" %>
   </div>
 
   <div class="mb-3">
