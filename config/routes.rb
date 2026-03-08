@@ -16,6 +16,8 @@ Rails.application.routes.draw do
 
   resources :users, only: [:show, :edit, :update, :destroy] do
     get :likes, on: :member
+    get :following, on: :member
+    get :followers, on: :member
   end
 
   get "timeline", to: "timeline#index", as: :timeline
@@ -31,9 +33,8 @@ Rails.application.routes.draw do
     resources :reports, only: [:new, :create]
   end
 
-  
+  resources :relationships, only: [:create, :destroy]
 
   get "/search", to: "search#posts"
   get "/search/users", to: "search#users", as: :search_users
 end
-

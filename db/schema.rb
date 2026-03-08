@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_02_27_121104) do
+ActiveRecord::Schema.define(version: 2026_03_08_031206) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -131,6 +131,13 @@ ActiveRecord::Schema.define(version: 2026_02_27_121104) do
     t.index ["area_id"], name: "index_posts_on_area_id"
     t.index ["is_hidden"], name: "index_posts_on_is_hidden"
     t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
+  create_table "relationships", force: :cascade do |t|
+    t.integer "follower_id"
+    t.integer "followed_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "reports", force: :cascade do |t|

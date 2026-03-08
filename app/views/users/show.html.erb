@@ -1,38 +1,80 @@
 <div class="container mt-4">
-  <div class="row">
+  <div class="row g-4">
 
     <!-- 左：プロフィール -->
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 profile-card">
+        <div class="card-body p-4">
 
-          <div class="text-center mb-3">
+          <div class="text-center mb-4">
             <% if @user.profile_image.attached? %>
-              <%= image_tag @user.get_profile_image(100, 100), class: "rounded-circle" %>
+              <%= image_tag @user.profile_image, class: "rounded-circle profile-avatar mb-3" %>
             <% else %>
-              <div class="soine-avatar mx-auto">
-                <%= (@user.name.presence || "U").first.upcase %>
+              <div class="profile-avatar-placeholder mx-auto mb-3">
+                <i class="fas fa-user"></i>
               </div>
             <% end %>
+
+            <h4 class="mb-1 fw-bold"><%= @user.name.presence || "ユーザー" %></h4>
+
+            <p class="text-muted mb-0">
+              <i class="fas fa-map-marker-alt me-1"></i>
+              <%= @user.area&.name || "地域未設定" %>
+            </p>
           </div>
 
-          <h4 class="mb-1"><%= @user.name.presence || "ユーザー" %></h4>
+          <!-- 統計 -->
+          <div class="profile-stats d-flex justify-content-around text-center mb-4">
+            <div>
+              <div class="fw-bold"><%= @user.posts.count %></div>
+              <div class="small text-muted">投稿</div>
+            </div>
+            <div>
+              <div class="fw-bold">
+                <%= link_to @user.following.count, following_user_path(@user), class: "text-decoration-none text-dark" %>
+              </div>
+              <div class="small text-muted">フォロー</div>
+            </div>
+            <div>
+              <div class="fw-bold">
+                <%= link_to @user.followers.count, followers_user_path(@user), class: "text-decoration-none text-dark" %>
+              </div>
+              <div class="small text-muted">フォロワー</div>
+            </div>
+          </div>
 
-          <p class="text-muted mb-2">
-            <i class="fas fa-map-marker-alt"></i>
-            <%= @user.area&.name || "地域未設定" %>
-          </p>
+          <!-- フォローボタン -->
+          <% if user_signed_in? && @user != current_user %>
+            <div class="mb-4">
+              <% if current_user.following?(@user) %>
+                <%= button_to "フォロー解除",
+                              relationship_path(current_user.active_relationships.find_by(followed_id: @user.id)),
+                              method: :delete,
+                              class: "btn btn-outline-secondary w-100" %>
+              <% else %>
+                <%= button_to "フォローする",
+                              relationships_path(followed_id: @user.id),
+                              method: :post,
+                              class: "btn btn-primary w-100" %>
+              <% end %>
+            </div>
+          <% end %>
 
-          <p class="mb-0">
-            <%= simple_format(@user.introduction.presence || "紹介文はまだ登録されていません。") %>
-          </p>
+          <!-- 紹介文 -->
+          <div class="profile-section mb-4">
+            <h6 class="profile-section-title">紹介文</h6>
+            <div class="profile-introduction">
+              <%= simple_format(@user.introduction.presence || "紹介文はまだ登録されていません。") %>
+            </div>
+          </div>
 
-          <div class="mt-3 d-flex justify-content-between">
-            <%= link_to "戻る", mypage_path(filter: params[:filter]), class: "btn btn-outline-secondary btn-sm" %>
-
+          <!-- ボタン -->
+          <div class="profile-actions d-grid gap-2">
             <% if @user == current_user %>
-              <%= link_to "編集", edit_user_path(@user), class: "btn btn-primary btn-sm" %>
+              <%= link_to "プロフィールを編集", edit_user_path(@user), class: "btn btn-primary" %>
             <% end %>
+
+            <%= link_to "戻る", mypage_path(filter: params[:filter]), class: "btn btn-outline-secondary" %>
           </div>
 
         </div>
@@ -40,18 +82,18 @@
     </div>
 
     <!-- 右：投稿一覧 -->
-    <div class="col-md-8">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0"><%= @user.name.presence || "ユーザー" %>の投稿</h5>
-        <span class="badge bg-light text-muted"><%= @posts.count %>件</span>
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h5 class="mb-0 fw-bold"><%= @user.name.presence || "ユーザー" %>の投稿</h5>
+        <span class="badge rounded-pill bg-light text-dark px-3 py-2"><%= @posts.count %>件</span>
       </div>
 
       <% if @posts.present? %>
         <% @posts.each do |post| %>
-          <div class="card shadow-sm mb-3">
+          <div class="card shadow-sm border-0 mb-3">
             <div class="card-body">
 
-              <div class="d-flex justify-content-between align-items-center small text-muted mb-2">
+              <div class="d-flex justify-content-between align-items-center small text-muted mb-2 flex-wrap gap-2">
                 <span><%= post.created_at.strftime("%Y/%m/%d %H:%M") %></span>
 
                 <% if @user == current_user %>
@@ -69,7 +111,7 @@
               <%= link_to post_path(post), class: "text-decoration-none text-dark d-block" do %>
 
                 <% if post.images.attached? %>
-                  <div class="mb-2 d-flex flex-wrap gap-2">
+                  <div class="mb-3 d-flex flex-wrap gap-2">
                     <% post.images.each do |image| %>
                       <div class="user-post-img-wrapper">
                         <%= image_tag image, class: "user-post-img" %>
@@ -79,18 +121,23 @@
                 <% end %>
 
                 <% if post.title.present? %>
-                  <h6 class="mb-1"><%= post.title %></h6>
+                  <h6 class="mb-2 fw-bold"><%= post.title %></h6>
                 <% end %>
 
-                <p class="mb-0"><%= simple_format(post.body) %></p>
+                <div class="post-body-text">
+                  <%= simple_format(post.body) %>
+                </div>
               <% end %>
-
 
             </div>
           </div>
         <% end %>
       <% else %>
-        <p class="text-muted">まだ投稿がありません。</p>
+        <div class="card shadow-sm border-0">
+          <div class="card-body text-center py-5">
+            <p class="text-muted mb-0">まだ投稿がありません。</p>
+          </div>
+        </div>
       <% end %>
     </div>
 
